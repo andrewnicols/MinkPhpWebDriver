@@ -43,41 +43,41 @@ class WebDriver extends CoreDriver
      *
      * @var RemoteWebDriver
      */
-    private $webDriver;
+    protected $webDriver;
 
     /**
      * @var string
      */
-    private $browserName;
+    protected $browserName;
 
     /**
      * @var DesiredCapabilities|null
      */
-    private $desiredCapabilities;
+    protected $desiredCapabilities;
 
     /**
      * The timeout configuration
      *
      * @var array
      */
-    private $timeouts = array();
+    protected $timeouts = array();
 
     /**
      * Wd host
      *
      * @var string
      */
-    private $wdHost;
+    protected $wdHost;
 
     /**
      * @var string
      */
-    private $rootWindow;
+    protected $rootWindow;
 
     /**
      * @var array<string, string>
      */
-    private $windows = [];
+    protected $windows = [];
 
     /**
      * Instantiates the driver.
@@ -123,7 +123,7 @@ class WebDriver extends CoreDriver
     /**
      * Applies timeouts to the current session
      */
-    private function applyTimeouts()
+    protected function applyTimeouts()
     {
         // @see https://w3c.github.io/webdriver/#set-timeouts
         $timeouts = $this->webDriver->manage()->timeouts();
@@ -216,7 +216,7 @@ class WebDriver extends CoreDriver
      *
      * @return mixed
      */
-    private function executeJsOnXpath($xpath, $script, $sync = true)
+    protected function executeJsOnXpath($xpath, $script, $sync = true)
     {
         $element = $this->findElement($xpath);
         return $this->executeJsOnElement($element, $script, $sync);
@@ -234,7 +234,7 @@ class WebDriver extends CoreDriver
      *
      * @return mixed
      */
-    private function executeJsOnElement(WebDriverElement $element, $script, $sync = true)
+    protected function executeJsOnElement(WebDriverElement $element, $script, $sync = true)
     {
         $script = str_replace('{{ELEMENT}}', 'arguments[0]', $script);
 
@@ -526,7 +526,7 @@ class WebDriver extends CoreDriver
      *
      * @return bool
      */
-    private function hasAttribute(WebDriverElement $element, $name)
+    protected function hasAttribute(WebDriverElement $element, $name)
     {
         return $this->executeJsOnElement($element, "return {{ELEMENT}}.hasAttribute('$name')");
     }
@@ -771,7 +771,7 @@ class WebDriver extends CoreDriver
         }
     }
 
-    private function clickOnElement(WebDriverElement $element)
+    protected function clickOnElement(WebDriverElement $element)
     {
         $element->click();
     }
@@ -1000,7 +1000,7 @@ class WebDriver extends CoreDriver
      *
      * @return RemoteWebElement
      */
-    private function findElement($xpath)
+    protected function findElement($xpath)
     {
         return $this->webDriver->findElement(WebDriverBy::xpath($xpath));
     }
@@ -1015,7 +1015,7 @@ class WebDriver extends CoreDriver
      *
      * @throws DriverException
      */
-    private function ensureInputType(WebDriverElement $element, $xpath, $type, $action)
+    protected function ensureInputType(WebDriverElement $element, $xpath, $type, $action)
     {
         if ('input' !== strtolower($element->getTagName()) || $type !== strtolower($element->getAttribute('type'))) {
             $message = 'Impossible to %s the element with XPath "%s" as it is not a %s input';
@@ -1031,7 +1031,7 @@ class WebDriver extends CoreDriver
      *
      * @return string
      */
-    private function keyModifier($modifier)
+    protected function keyModifier($modifier)
     {
         if ($modifier === 'alt') {
             $modifier = WebDriverKeys::ALT;
@@ -1053,7 +1053,7 @@ class WebDriver extends CoreDriver
      *
      * @return string
      */
-    private function decodeChar($char)
+    protected function decodeChar($char)
     {
         if (\is_numeric($char)) {
             return \chr($char);
@@ -1067,7 +1067,7 @@ class WebDriver extends CoreDriver
      * @param $char
      * @param $modifier
      */
-    private function sendKey($xpath, $char, $modifier)
+    protected function sendKey($xpath, $char, $modifier)
     {
         // @see https://w3c.github.io/uievents/#event-type-keydown
         $element = $this->findElement($xpath);
@@ -1092,7 +1092,7 @@ class WebDriver extends CoreDriver
      * @throws DriverException
      * @throws UnsupportedDriverActionException
      */
-    private function getDateTimeFormatForRemoteDriver()
+    protected function getDateTimeFormatForRemoteDriver()
     {
         $format = '';
         $parts = $this->evaluateScript('return (new Intl.DateTimeFormat()).formatToParts(new Date(Date.UTC(2012, 01, 01, 01, 0, 0)))');
