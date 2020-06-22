@@ -73,8 +73,10 @@ if [ "$START_XVFB" = "1" ]; then
 fi;
 
 if [ "$BROWSER_NAME" = "chrome" ]; then
+    ./chromedriver/chromedriver --version
     ./chromedriver/chromedriver --port=4444 --verbose --whitelisted-ips=  &> ./logs/webdriver.log &
 elif [ "$BROWSER_NAME" = "firefox" ]; then
+    ./geckodriver/geckodriver --version
     ./geckodriver/geckodriver --host 127.0.0.1 -vv --port 4444 &> ./logs/webdriver.log &
 else
     docker run --rm --network=host -p 4444:4444 "selenium/standalone-firefox:$SELENIUM_DRIVER" &> ./logs/selenium.log &
