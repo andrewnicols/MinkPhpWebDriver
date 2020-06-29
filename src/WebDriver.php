@@ -362,8 +362,8 @@ class WebDriver extends CoreDriver
             // @see https://github.com/mozilla/geckodriver/issues/149
             if (null === $name) {
                 $name = $this->rootWindow;
-            } else if ($windowId = array_search($name, $this->windows, true)) {
-                $name = $windowId;
+            } else if (array_key_exists($name, $this->windows)) {
+                $name = $this->windows[$name];
             }
             $this->webDriver->switchTo()->window($name);
             return;
@@ -753,26 +753,26 @@ EOF;
         $this->clickOnElement($element);
 
         if ($this->browserName === 'firefox') {
-            $handles = array_filter(array_map(function ($v) {
-                if ($v === $this->rootWindow) {
-                    return false;
+            $handles = [];
+            foreach ($this->getWindowNames() as $id) {
+                if ($id === $this->rootWindow) {
+                    continue;
                 }
+                $title = array_search($id, $this->windows, true);
+                if ($title !== false) {
+                    // This window is current and the name already stored.
+                    // Fetch from the cache.
+                    $handles[$title] = $id;
+                } else {
+                    $this->switchToWindow($id);
+                    $title = $this->evaluateScript('window.name');
+                    $this->switchToWindow(null);
 
-                if (array_key_exists($v, $this->windows)) {
-                    return false;
+                    $handles[$title] = $id;
                 }
-
-                $this->switchToWindow($v);
-                $title = $this->evaluateScript('window.name');
-                $this->switchToWindow(null);
-
-                return [$title => $v];
-            }, $this->getWindowNames()));
-
-            if ($handles) {
-                $handles = array_flip(array_merge(...$handles));
-                $this->windows += $handles;
             }
+
+            $this->windows = $handles;
         }
     }
 
