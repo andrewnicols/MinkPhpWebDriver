@@ -359,8 +359,8 @@ class WebDriver extends CoreDriver
             // @see https://github.com/mozilla/geckodriver/issues/149
             if (null === $name) {
                 $name = $this->rootWindow;
-            } else if ($windowId = array_search($name, $this->windows, true)) {
-                $name = $windowId;
+            } else if (array_key_exists($name, $this->windows)) {
+                $name = $this->windows[$name];
             }
             $this->webDriver->switchTo()->window($name);
             return;
@@ -753,7 +753,7 @@ class WebDriver extends CoreDriver
                     return false;
                 }
 
-                if (array_key_exists($v, $this->windows)) {
+                if (array_search($v, $this->windows, true)) {
                     return false;
                 }
 
@@ -765,8 +765,7 @@ class WebDriver extends CoreDriver
             }, $this->getWindowNames()));
 
             if ($handles) {
-                $handles = array_flip(array_merge(...$handles));
-                $this->windows += $handles;
+                $this->windows = array_merge($this->windows, ...$handles);
             }
         }
     }
