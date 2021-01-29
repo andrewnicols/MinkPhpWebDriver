@@ -366,6 +366,7 @@ class WebDriver extends CoreDriver
     public function switchToWindow($name = null)
     {
         if ($this->browserName === 'firefox') {
+            error_log("Trying to switch to window " . var_export($name, true));
             // Firefox stores window IDs rather than window names and does not provide a working way to map the ids to
             // names.
             // Each time we switch to a window, we fetch the list of window IDs, and attempt to map them.
@@ -373,6 +374,7 @@ class WebDriver extends CoreDriver
             // @see https://github.com/mozilla/geckodriver/issues/149
             $handles = [];
             foreach ($this->getWindowNames() as $id) {
+                error_log("Checking details of window with id {$id}");
                 if ($id === $this->rootWindow) {
                     // Do not put the root window into the list of handles.
                     continue;
@@ -380,6 +382,7 @@ class WebDriver extends CoreDriver
 
                 $title = array_search($id, $this->windows, true);
                 if ($title !== false) {
+                    error_log("Matches title '{$title}'");
                     // This window is current and the name already stored.
                     // Use the currently stored id from $this->windows to avoid switching window unnecessarily.
                     $handles[$title] = $id;
@@ -387,6 +390,7 @@ class WebDriver extends CoreDriver
                     // This window title is unknown. Switch to the window by ID and find the name.
                     $this->webDriver->switchTo()->window($id);
                     $title = $this->evaluateScript('window.name');
+                    error_log("Got a new title of '{$title}'");
 
                     $handles[$title] = $id;
                 }
@@ -400,6 +404,7 @@ class WebDriver extends CoreDriver
             } else if (array_key_exists($name, $this->windows)) {
                 $name = $this->windows[$name];
             }
+            error_log("Switching to {$name}");
         }
 
         $this->webDriver->switchTo()->window($name);
