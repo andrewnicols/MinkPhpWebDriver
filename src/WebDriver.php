@@ -366,6 +366,7 @@ class WebDriver extends CoreDriver
     public function switchToWindow($name = null)
     {
         if ($this->browserName === 'firefox') {
+            error_log("");
             error_log("Trying to switch to window " . var_export($name, true));
             // Firefox stores window IDs rather than window names and does not provide a working way to map the ids to
             // names.
@@ -382,7 +383,7 @@ class WebDriver extends CoreDriver
 
                 $title = array_search($id, $this->windows, true);
                 if ($title !== false) {
-                    error_log("Matches title '{$title}'");
+                    error_log("Matches title '{$title}' to '{$id}'");
                     // This window is current and the name already stored.
                     // Use the currently stored id from $this->windows to avoid switching window unnecessarily.
                     $handles[$title] = $id;
@@ -390,7 +391,7 @@ class WebDriver extends CoreDriver
                     // This window title is unknown. Switch to the window by ID and find the name.
                     $this->webDriver->switchTo()->window($id);
                     $title = $this->evaluateScript('window.name');
-                    error_log("Got a new title of '{$title}'");
+                    error_log("Got a new title of '{$title}' for id '{$id}'");
 
                     $handles[$title] = $id;
                 }
@@ -398,6 +399,10 @@ class WebDriver extends CoreDriver
 
             // Store the window name => id mappings.
             $this->windows = $handles;
+
+            error_log("These are the windows:");
+            error_log(var_export($this->windows, true));
+            error_log("Looking for a window named '{$name}'");
 
             if (null === $name) {
                 $name = $this->rootWindow;
