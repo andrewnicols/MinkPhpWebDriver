@@ -386,6 +386,9 @@ class WebDriver extends CoreDriver
                     error_log("Matches title '{$title}' to '{$id}'");
                     // This window is current and the name already stored.
                     // Use the currently stored id from $this->windows to avoid switching window unnecessarily.
+                    $this->webDriver->switchTo()->window($id);
+                    $title = $this->evaluateScript('window.name');
+                    error_log("Got a new title of '{$title}' for id '{$id}'");
                     $handles[$title] = $id;
                 } else {
                     // This window title is unknown. Switch to the window by ID and find the name.
